@@ -1,0 +1,946 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Math Web App</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f6fb;
+    color: #263449;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(135deg, #173b72, #2878c7);
+    color: white;
+    padding: 35px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #e1edff;
+}
+
+.container {
+    max-width: 950px;
+    margin: 30px auto;
+    padding: 0 18px;
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    flex: 1;
+    min-width: 140px;
+    padding: 13px 10px;
+    border: none;
+    border-radius: 9px;
+    background: white;
+    color: #294566;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tab-button.active {
+    background: #2168b5;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 13px;
+    box-shadow: 0 3px 15px rgba(0,0,0,.06);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+h2 {
+    color: #1c548f;
+    margin-bottom: 12px;
+}
+
+.description {
+    color: #68788d;
+    margin-bottom: 22px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin: 15px 0 6px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+button.action {
+    background: #2168b5;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 7px;
+    margin-top: 18px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button.action:hover {
+    background: #174b86;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.result {
+    background: #edf5ff;
+    border-left: 4px solid #2878c7;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 6px;
+    white-space: pre-line;
+    min-height: 45px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+    padding: 12px;
+    border: 1px solid #dbe3ed;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.radio-option input {
+    width: auto;
+}
+
+.radio-option label {
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.quiz-question {
+    background: #f0f6ff;
+    padding: 18px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.quiz-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+footer {
+    text-align: center;
+    color: #718096;
+    padding: 25px;
+    font-size: 13px;
+}
+
+@media(max-width:600px) {
+    header h1 {
+        font-size: 23px;
+    }
+
+    .tab-content {
+        padding: 18px;
+    }
+
+    .tab-button {
+        min-width: 45%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🧮 Smart Math Web App</h1>
+    <p>Aplikasi sederhana untuk belajar matematika</p>
+</header>
+
+<main class="container">
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab('geometri',this)">📐 Luas & Keliling</button>
+        <button class="tab-button" onclick="openTab('kategori',this)">📊 Kategori Nilai</button>
+        <button class="tab-button" onclick="openTab('analisis',this)">📈 Analisis Nilai</button>
+        <button class="tab-button" onclick="openTab('faktorial',this)">🔢 Faktorial</button>
+        <button class="tab-button" onclick="openTab('quiz',this)">📝 Quiz</button>
+    </div>
+
+    <!-- TAB 1: LUAS DAN KELILING -->
+
+    <section id="geometri" class="tab-content active">
+
+        <h2>📐 Luas & Keliling Bangun Datar</h2>
+        <p class="description">
+            Pilih jenis perhitungan dan bangun datar yang ingin dihitung.
+        </p>
+
+        <label>Jenis Perhitungan</label>
+        <select id="jenis" onchange="aturInput()">
+            <option value="luas">Hitung Luas</option>
+            <option value="keliling">Hitung Keliling</option>
+        </select>
+
+        <label>Pilih Bangun</label>
+        <select id="bangun" onchange="aturInput()">
+            <option>Persegi</option>
+            <option>Persegi Panjang</option>
+            <option>Segitiga</option>
+        </select>
+
+        <label id="label1">Sisi</label>
+        <input type="number" id="angka1" min="0" step="any" placeholder="Masukkan nilai">
+
+        <div id="input2" class="hidden">
+            <label id="label2">Input 2</label>
+            <input type="number" id="angka2" min="0" step="any" placeholder="Masukkan nilai">
+        </div>
+
+        <div id="input3" class="hidden">
+            <label id="label3">Input 3</label>
+            <input type="number" id="angka3" min="0" step="any" placeholder="Masukkan nilai">
+        </div>
+
+        <button class="action" onclick="hitungGeometri()">🧮 Hitung</button>
+
+        <div id="hasilGeometri" class="result">Hasil perhitungan akan ditampilkan di sini.</div>
+
+    </section>
+
+
+    <!-- TAB 2: KATEGORI NILAI -->
+
+    <section id="kategori" class="tab-content">
+
+        <h2>📊 Kategori Nilai</h2>
+        <p class="description">
+            Masukkan nilai untuk mengetahui kategorinya.
+        </p>
+
+        <label>Masukkan Nilai</label>
+        <input type="number" id="nilai" min="0" max="100" step="any" placeholder="Contoh: 85">
+
+        <button class="action" onclick="cekKategori()">Cek Kategori</button>
+
+        <div id="hasilKategori" class="result">Kategori nilai akan ditampilkan di sini.</div>
+
+    </section>
+
+
+    <!-- TAB 3: ANALISIS NILAI -->
+
+    <section id="analisis" class="tab-content">
+
+        <h2>📈 Analisis Nilai</h2>
+        <p class="description">
+            Masukkan beberapa nilai yang dipisahkan dengan tanda koma.
+        </p>
+
+        <label>Data Nilai</label>
+        <input type="text" id="dataNilai" placeholder="Contoh: 70, 80, 90, 75, 85">
+
+        <button class="action" onclick="analisisData()">Analisis Data</button>
+
+        <div id="hasilAnalisis" class="result">Hasil analisis akan ditampilkan di sini.</div>
+
+        <h2 style="margin-top:30px;">🔎 Pencarian Nilai</h2>
+        <p class="description">
+            Cari nilai tertentu dan ketahui posisi kemunculannya.
+        </p>
+
+        <label>Nilai yang Dicari</label>
+        <input type="number" id="target" step="any" placeholder="Masukkan nilai">
+
+        <button class="action" onclick="cariData()">Cari Nilai</button>
+
+        <div id="hasilPencarian" class="result">Hasil pencarian akan ditampilkan di sini.</div>
+
+    </section>
+
+
+    <!-- TAB 4: FAKTORIAL -->
+
+    <section id="faktorial" class="tab-content">
+
+        <h2>🔢 Perhitungan Faktorial</h2>
+        <p class="description">
+            Hitung faktorial suatu bilangan menggunakan konsep rekursi.
+        </p>
+
+        <label>Masukkan Bilangan</label>
+        <input type="number" id="angkaFaktorial" min="0" step="1" placeholder="Contoh: 5">
+
+        <button class="action" onclick="hitungFaktorial()">Hitung Faktorial</button>
+
+        <div id="hasilFaktorial" class="result">Hasil faktorial akan ditampilkan di sini.</div>
+
+    </section>
+
+
+    <!-- TAB 5: QUIZ -->
+
+    <section id="quiz" class="tab-content">
+
+        <h2>📝 Quiz Smart Math</h2>
+        <p class="description">
+            Jawablah lima soal berikut. Setiap jawaban benar mendapatkan 20 poin.
+        </p>
+
+        <div id="quizArea">
+
+            <h3 id="nomorSoal">Soal 1 dari 5</h3>
+
+            <div class="quiz-question">
+                <strong id="pertanyaan"></strong>
+            </div>
+
+            <div id="pilihanJawaban"></div>
+
+            <div class="quiz-actions">
+                <button class="action" id="tombolPeriksa" onclick="periksaJawaban()">✅ Periksa Jawaban</button>
+                <button class="action" id="tombolBerikutnya" onclick="soalBerikutnya()" disabled>➡️ Soal Berikutnya</button>
+            </div>
+
+            <div id="hasilQuiz" class="result">Belum diperiksa.</div>
+
+        </div>
+
+        <div id="quizSelesai" class="hidden">
+            <h2>🎉 Quiz Selesai!</h2>
+            <div id="skorAkhir" class="result"></div>
+            <button class="action" onclick="mulaiKembali()">🔄 Mulai Kembali</button>
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    Smart Math Web App | Media Pembelajaran Matematika
+</footer>
+
+
+<script>
+
+// =====================================================
+// 1. NAVIGASI TAB
+// =====================================================
+
+function openTab(id, button) {
+    document.querySelectorAll(".tab-content").forEach(tab => {
+        tab.classList.remove("active");
+    });
+
+    document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+    button.classList.add("active");
+}
+
+
+// =====================================================
+// 2. FUNGSI LUAS
+// =====================================================
+
+function luasPersegi(sisi) {
+    return sisi * sisi;
+}
+
+function luasPersegiPanjang(panjang, lebar) {
+    return panjang * lebar;
+}
+
+function luasSegitiga(alas, tinggi) {
+    return 0.5 * alas * tinggi;
+}
+
+
+// =====================================================
+// 3. FUNGSI KELILING
+// =====================================================
+
+function kelilingPersegi(sisi) {
+    return 4 * sisi;
+}
+
+function kelilingPersegiPanjang(panjang, lebar) {
+    return 2 * (panjang + lebar);
+}
+
+function kelilingSegitiga(sisi1, sisi2, sisi3) {
+    return sisi1 + sisi2 + sisi3;
+}
+
+
+// =====================================================
+// 4. MENGATUR INPUT GEOMETRI
+// =====================================================
+
+function aturInput() {
+
+    const jenis = document.getElementById("jenis").value;
+    const bangun = document.getElementById("bangun").value;
+
+    const input2 = document.getElementById("input2");
+    const input3 = document.getElementById("input3");
+
+    const label1 = document.getElementById("label1");
+    const label2 = document.getElementById("label2");
+    const label3 = document.getElementById("label3");
+
+    input2.classList.add("hidden");
+    input3.classList.add("hidden");
+
+    if (bangun === "Persegi") {
+        label1.textContent = "Sisi";
+    }
+
+    else if (bangun === "Persegi Panjang") {
+        label1.textContent = "Panjang";
+        label2.textContent = "Lebar";
+        input2.classList.remove("hidden");
+    }
+
+    else if (bangun === "Segitiga") {
+
+        if (jenis === "luas") {
+            label1.textContent = "Alas";
+            label2.textContent = "Tinggi";
+            input2.classList.remove("hidden");
+        }
+
+        else {
+            label1.textContent = "Sisi 1";
+            label2.textContent = "Sisi 2";
+            label3.textContent = "Sisi 3";
+
+            input2.classList.remove("hidden");
+            input3.classList.remove("hidden");
+        }
+    }
+}
+
+
+// =====================================================
+// 5. PROSES PERHITUNGAN GEOMETRI
+// =====================================================
+
+function hitungGeometri() {
+
+    const jenis = document.getElementById("jenis").value;
+    const bangun = document.getElementById("bangun").value;
+
+    const a = document.getElementById("angka1").value;
+    const b = document.getElementById("angka2").value;
+    const c = document.getElementById("angka3").value;
+
+    const angka1 = a === "" ? null : Number(a);
+    const angka2 = b === "" ? null : Number(b);
+    const angka3 = c === "" ? null : Number(c);
+
+    const hasil = document.getElementById("hasilGeometri");
+
+    if (angka1 === null || angka1 < 0) {
+        hasil.textContent = "Masukkan nilai pertama yang valid.";
+        return;
+    }
+
+    if (bangun !== "Persegi" && (angka2 === null || angka2 < 0)) {
+        hasil.textContent = "Masukkan nilai kedua yang valid.";
+        return;
+    }
+
+    if (jenis === "keliling" && bangun === "Segitiga" && (angka3 === null || angka3 < 0)) {
+        hasil.textContent = "Masukkan nilai sisi ketiga yang valid.";
+        return;
+    }
+
+    let nilai;
+
+    if (jenis === "luas") {
+
+        if (bangun === "Persegi") {
+            nilai = luasPersegi(angka1);
+        }
+
+        else if (bangun === "Persegi Panjang") {
+            nilai = luasPersegiPanjang(angka1, angka2);
+        }
+
+        else {
+            nilai = luasSegitiga(angka1, angka2);
+        }
+
+    }
+
+    else {
+
+        if (bangun === "Persegi") {
+            nilai = kelilingPersegi(angka1);
+        }
+
+        else if (bangun === "Persegi Panjang") {
+            nilai = kelilingPersegiPanjang(angka1, angka2);
+        }
+
+        else {
+            nilai = kelilingSegitiga(angka1, angka2, angka3);
+        }
+    }
+
+    const nama = jenis === "luas" ? "Luas" : "Keliling";
+
+    hasil.textContent = `${nama} ${bangun.toLowerCase()} = ${nilai}`;
+}
+
+
+// =====================================================
+// 6. KATEGORI NILAI
+// =====================================================
+
+function kategoriNilai(nilai) {
+
+    if (nilai >= 90) return "Sangat Baik";
+    if (nilai >= 75) return "Baik";
+    if (nilai >= 60) return "Cukup";
+
+    return "Perlu Latihan";
+}
+
+function cekKategori() {
+
+    const input = document.getElementById("nilai").value;
+    const hasil = document.getElementById("hasilKategori");
+
+    if (input === "") {
+        hasil.textContent = "Masukkan nilai terlebih dahulu.";
+        return;
+    }
+
+    const nilai = Number(input);
+
+    if (nilai < 0 || nilai > 100) {
+        hasil.textContent = "Nilai harus berada antara 0 sampai 100.";
+        return;
+    }
+
+    hasil.textContent = `Nilai: ${nilai}\nKategori: ${kategoriNilai(nilai)}`;
+}
+
+
+// =====================================================
+// 7. MENGUBAH TEKS MENJADI DATA ANGKA
+// =====================================================
+
+function ubahData(teks) {
+
+    if (!teks.trim()) return [];
+
+    const bagian = teks.split(",");
+
+    if (bagian.some(x => x.trim() === "")) return [];
+
+    const data = bagian.map(x => Number(x.trim()));
+
+    if (data.some(x => !Number.isFinite(x))) return [];
+
+    return data;
+}
+
+
+// =====================================================
+// 8. ANALISIS DATA
+// =====================================================
+
+function analisisData() {
+
+    const teks = document.getElementById("dataNilai").value;
+    const hasil = document.getElementById("hasilAnalisis");
+
+    const data = ubahData(teks);
+
+    if (data.length === 0) {
+        hasil.textContent = "Data tidak valid atau masih kosong.";
+        return;
+    }
+
+    const urut = [...data].sort((a,b) => a-b);
+
+    const maksimum = Math.max(...data);
+    const minimum = Math.min(...data);
+
+    const jumlah = data.length;
+
+    const rataRata = data.reduce((total,nilai) => total+nilai,0) / jumlah;
+
+    hasil.textContent =
+`Data asli:
+[${data.join(", ")}]
+
+Data setelah diurutkan:
+[${urut.join(", ")}]
+
+Nilai maksimum:
+${maksimum}
+
+Nilai minimum:
+${minimum}
+
+Jumlah data:
+${jumlah}
+
+Rata-rata:
+${rataRata.toFixed(2)}`;
+}
+
+
+// =====================================================
+// 9. PENCARIAN DATA
+// =====================================================
+
+function cariData() {
+
+    const teks = document.getElementById("dataNilai").value;
+    const targetInput = document.getElementById("target").value;
+
+    const hasil = document.getElementById("hasilPencarian");
+
+    const data = ubahData(teks);
+
+    if (data.length === 0) {
+        hasil.textContent = "Data tidak valid atau masih kosong.";
+        return;
+    }
+
+    if (targetInput === "") {
+        hasil.textContent = "Masukkan nilai yang ingin dicari.";
+        return;
+    }
+
+    const target = Number(targetInput);
+
+    const posisi = [];
+
+    data.forEach((nilai,index) => {
+        if (nilai === target) {
+            posisi.push(index+1);
+        }
+    });
+
+    if (posisi.length === 0) {
+        hasil.textContent = `Nilai ${target} tidak ditemukan dalam data.`;
+    }
+
+    else {
+        hasil.textContent =
+`Nilai ${target} ditemukan sebanyak ${posisi.length} kali.
+Terdapat pada: ${posisi.map(p => "data ke-"+p).join(", ")}.`;
+    }
+}
+
+
+// =====================================================
+// 10. FAKTORIAL MENGGUNAKAN REKURSI
+// =====================================================
+
+function faktorial(n) {
+
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+
+    return n * faktorial(n-1);
+}
+
+function hitungFaktorial() {
+
+    const input = document.getElementById("angkaFaktorial").value;
+    const hasil = document.getElementById("hasilFaktorial");
+
+    if (input === "") {
+        hasil.textContent = "Masukkan bilangan terlebih dahulu.";
+        return;
+    }
+
+    const n = Number(input);
+
+    if (n < 0) {
+        hasil.textContent = "Bilangan harus 0 atau lebih.";
+        return;
+    }
+
+    if (!Number.isInteger(n)) {
+        hasil.textContent = "Masukkan bilangan bulat.";
+        return;
+    }
+
+    if (n > 170) {
+        hasil.textContent = "Masukkan bilangan maksimal 170.";
+        return;
+    }
+
+    hasil.textContent = `${n}! = ${faktorial(n)}`;
+}
+
+
+// =====================================================
+// 11. DATA QUIZ
+// =====================================================
+
+const quizQuestions = [
+
+    {
+        question: "Berapakah luas persegi dengan panjang sisi 5 cm?",
+        options: ["20 cm²","25 cm²","30 cm²","35 cm²"],
+        answer: "25 cm²"
+    },
+
+    {
+        question: "Berapakah keliling persegi dengan panjang sisi 6 cm?",
+        options: ["12 cm","18 cm","24 cm","36 cm"],
+        answer: "24 cm"
+    },
+
+    {
+        question: "Berapakah luas persegi panjang dengan panjang 10 cm dan lebar 5 cm?",
+        options: ["15 cm²","30 cm²","50 cm²","100 cm²"],
+        answer: "50 cm²"
+    },
+
+    {
+        question: "Berapakah luas segitiga dengan alas 10 cm dan tinggi 8 cm?",
+        options: ["20 cm²","40 cm²","80 cm²","100 cm²"],
+        answer: "40 cm²"
+    },
+
+    {
+        question: "Berapakah hasil dari 5! (5 faktorial)?",
+        options: ["25","60","100","120"],
+        answer: "120"
+    }
+
+];
+
+
+// =====================================================
+// 12. VARIABEL QUIZ
+// =====================================================
+
+let quizIndex = 0;
+let quizScore = 0;
+let sudahDiperiksa = false;
+
+
+// =====================================================
+// 13. MENAMPILKAN SOAL
+// =====================================================
+
+function tampilkanSoal() {
+
+    const soal = quizQuestions[quizIndex];
+
+    document.getElementById("nomorSoal").textContent =
+        `Soal ${quizIndex+1} dari ${quizQuestions.length}`;
+
+    document.getElementById("pertanyaan").textContent =
+        soal.question;
+
+    const pilihan = document.getElementById("pilihanJawaban");
+
+    pilihan.innerHTML = "";
+
+    soal.options.forEach((opsi,index) => {
+
+        const div = document.createElement("div");
+
+        div.className = "radio-option";
+
+        const radio = document.createElement("input");
+
+        radio.type = "radio";
+        radio.name = "jawaban";
+        radio.value = opsi;
+        radio.id = "opsi"+index;
+
+        const label = document.createElement("label");
+
+        label.htmlFor = radio.id;
+        label.textContent = opsi;
+
+        div.appendChild(radio);
+        div.appendChild(label);
+
+        pilihan.appendChild(div);
+
+    });
+
+    document.getElementById("hasilQuiz").textContent = "Belum diperiksa.";
+
+    document.getElementById("tombolPeriksa").disabled = false;
+
+    document.getElementById("tombolBerikutnya").disabled = true;
+
+    sudahDiperiksa = false;
+}
+
+
+// =====================================================
+// 14. MEMERIKSA JAWABAN QUIZ
+// =====================================================
+
+function periksaJawaban() {
+
+    if (sudahDiperiksa) return;
+
+    const pilihan = document.querySelector('input[name="jawaban"]:checked');
+
+    const hasil = document.getElementById("hasilQuiz");
+
+    if (!pilihan) {
+        hasil.textContent = "Silakan pilih jawaban terlebih dahulu.";
+        return;
+    }
+
+    const soal = quizQuestions[quizIndex];
+
+    if (pilihan.value === soal.answer) {
+
+        quizScore += 20;
+
+        hasil.textContent = "✅ Benar! Kamu mendapatkan 20 poin.";
+
+    }
+
+    else {
+
+        hasil.textContent =
+            `❌ Jawaban belum tepat.\nJawaban yang benar adalah ${soal.answer}.`;
+
+    }
+
+    sudahDiperiksa = true;
+
+    document.querySelectorAll('input[name="jawaban"]').forEach(radio => {
+        radio.disabled = true;
+    });
+
+    document.getElementById("tombolPeriksa").disabled = true;
+
+    if (quizIndex === quizQuestions.length-1) {
+
+        hasil.textContent +=
+            `\n\n🎉 Quiz selesai! Total skor kamu: ${quizScore} dari 100.`;
+
+        document.getElementById("tombolBerikutnya").disabled = true;
+
+        document.getElementById("quizArea").classList.add("hidden");
+
+        document.getElementById("quizSelesai").classList.remove("hidden");
+
+        document.getElementById("skorAkhir").textContent =
+            `Total skor kamu: ${quizScore} dari 100.`;
+
+    }
+
+    else {
+
+        document.getElementById("tombolBerikutnya").disabled = false;
+
+    }
+}
+
+
+// =====================================================
+// 15. SOAL BERIKUTNYA
+// =====================================================
+
+function soalBerikutnya() {
+
+    if (!sudahDiperiksa) return;
+
+    quizIndex++;
+
+    tampilkanSoal();
+
+}
+
+
+// =====================================================
+// 16. MULAI KEMBALI QUIZ
+// =====================================================
+
+function mulaiKembali() {
+
+    quizIndex = 0;
+
+    quizScore = 0;
+
+    sudahDiperiksa = false;
+
+    document.getElementById("quizArea").classList.remove("hidden");
+
+    document.getElementById("quizSelesai").classList.add("hidden");
+
+    tampilkanSoal();
+
+}
+
+
+// =====================================================
+// 17. MEMULAI APLIKASI
+// =====================================================
+
+aturInput();
+
+tampilkanSoal();
+
+</script>
+
+</body>
+</html>
